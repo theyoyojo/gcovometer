@@ -7,16 +7,6 @@
 #
 # When life gives you lemons, cover the source code in lemonade!
 
-
-
-# search for place in file where "File '<file>'" exists
-# Get the last number on the next line (total lines in file)
-
-# iterate backwards until either another "Creating.." line is found or begining of file is reached
-# for each set of two lines "Lines.." and and "Function.."
-# get the pecentage executed, the lines in the function, and the function name
-# calculate juice for the function
-
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -60,25 +50,19 @@ def get_covered_file_data(covreport):
         match line.split():
             case ['Function', name]:
                 function = name.split("'")[1]
-                print('func', function)
             case ['File', name]:
                 filename = name.split("'")[1]
-                print('file', filename)
             case ['Lines', executed_percent, 'of', func_lines] if function is not None:
                 covered_function = CoveredFunction(function)
                 covered_function.percent = percent_unpack(executed_percent)
                 covered_function.lines = float(func_lines)
-                print(covered_function)
                 covered_file.functions.append(covered_function)
                 function = None
             case ['Lines', executed_percent, 'of', file_lines] if filename is not None:
                 covered_file.filename = filename
                 covered_file.percent = percent_unpack(executed_percent)
                 covered_file.lines = float(file_lines)
-                print(covered_file)
                 return covered_file
-
-        print(i, line)
 
 def main(args):
     covered_file = get_covered_file_data(args.covreport)
