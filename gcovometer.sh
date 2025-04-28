@@ -4,12 +4,13 @@ list_files=
 kernel_file=
 reset_cov=
 make_report=
+function_flag=
 SRCDIR="/builddir/build/BUILD/kernel-6.12.0-74.gcov.ns.selftest.el10/linux-6.12.0-74.gcov.el10_0.aarch64"
 COVDIR="/sys/kernel/debug/gcov/${SRCDIR}"
 script_dir=$(realpath $(dirname $0))
 TESTS=
 
-while getopts "l:r:t:mc" OPTION; do
+while getopts "l:r:t:mcf" OPTION; do
 	case $OPTION in
 		l)
 			echo "get list for kernel file $OPTARG"
@@ -28,6 +29,10 @@ while getopts "l:r:t:mc" OPTION; do
 		m)
 			echo "will create covreport"
 			make_report=y
+			;;
+		f)
+			echo "will break down by function"
+			function_flag="-f"
 			;;
 		c)
 			echo "will clean up and exit"
@@ -87,7 +92,7 @@ if [ ! -z "$make_report" ]; then
 
 	pushd . >/dev/null
 	cd $SRCDIR
-	gcov -p -H -o $COVDIR/$dir $kernel_file > $script_dir/$(path_to_hashes $kernel_file).covreport
+	gcov $function_flag -p -H -o $COVDIR/$dir $kernel_file > $script_dir/$(path_to_hashes $kernel_file).covreport
 
 	cp *.gcov $script_dir
 	popd >/dev/null
